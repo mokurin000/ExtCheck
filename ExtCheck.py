@@ -202,6 +202,16 @@ def checkSig(bin, name):
     i = len(siglist)
     x = 0
     bin = binascii.unhexlify(bin) #Putting Hex rep into binary data
+    # mp4
+    if bin.startswith(b"\x00\x00\x00\x20ftyp"):
+        iso = bin[0x14:0x18].decode("ascii").upper()
+        codec = bin[0x18:0x1C].decode("ascii").upper()
+        c = f"{iso} MP4 {codec}"
+        detectlist.append(name)
+        detectlist.append(c)
+
+        print("Signature DETECTED for " + c + " file At OFFSET " + 0x0)
+        return
     #print(bin)
     while x < i:
         a = siglist[x]
