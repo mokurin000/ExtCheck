@@ -203,14 +203,15 @@ def checkSig(bin, name):
     x = 0
     bin = binascii.unhexlify(bin) #Putting Hex rep into binary data
     # mp4
-    if bin.startswith(b"\x00\x00\x00\x20ftyp"):
-        iso = bin[0x14:0x18].decode("ascii").upper()
-        codec = bin[0x18:0x1C].decode("ascii").upper()
-        c = f"{iso} MP4 {codec}"
+    if bin[4:8] == b"ftyp":
+        fytp_size = int.from_bytes(bin[:4], 'big')
+        print("Ftyp Box size:", fytp_size)
+        c = "MP4 "
+        for field_start in range(0x14, ftyp_size, 4):
+            c += bin[field_start:field_start+4].decode("ascii").upper()
         detectlist.append(name)
         detectlist.append(c)
-
-        print("Signature DETECTED for " + c + " file At OFFSET " + 0x0)
+        print("Signature DETECTED for " + c + " file At OFFSET " + str(0x0))
         return
     #print(bin)
     while x < i:
